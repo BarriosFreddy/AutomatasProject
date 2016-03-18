@@ -1,0 +1,43 @@
+<zk xmlns="http://www.zkoss.org/2005/zul">
+    <window apply="com.freddybarrios.controller.MainController">
+        <div width="700px" style="margin: 50px auto 0 auto;">
+            <grid>
+                <rows>
+                    <row>
+                        <cell colspan="3">
+                            <textbox id="tbxEditor" hflex="1" rows="10" multiline="true"/>
+                        </cell>	
+                    </row>
+                    <row>
+                        <cell colspan="3">
+                            <button id="btnValidar" label="VALIDAR"/>
+                        </cell>
+                    </row>
+                    <row>
+                        <cell>
+                            <label value="Variables declaradas y usadas"></label>
+                        </cell>
+                        <cell >
+                            <label value="Variables declaradas y no usadas"></label>
+                        </cell>
+                        <cell >
+                            <label value="Variables no declaradas y usadas"></label>
+                        </cell>
+                    </row>
+                    <row>
+                        <cell>
+                            <vbox id="declaradasUsadas"></vbox>
+                        </cell>
+                        <cell >
+                            <vbox id="declaradasNoUsadas"></vbox>
+                        </cell>
+                        <cell >
+                            <vbox id="noDeclaradasUsadas"></vbox>
+                        </cell>
+                    </row>
+                </rows>
+            </grid>
+
+        </div>
+    </window>
+</zk>
