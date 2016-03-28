@@ -2,14 +2,13 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group name="Health Manager Beraka">
+            <file>file:/Users/FreddyBarrios/NetBeansProjects/AutomatasProject/src/java/com/freddybarrios/validator/Validator.java</file>
+        </group>
         <group>
             <file>file:/C:/Users/freddy/Documents/NetBeansProjects/AutomatasProject/src/java/com/freddybarrios/validator/Analizador.java</file>
             <file>file:/C:/Users/freddy/Documents/NetBeansProjects/AutomatasProject/src/java/com/freddybarrios/controller/MainController.java</file>
-            <file>file:/C:/Users/freddy/Documents/NetBeansProjects/AutomatasProject/src/java/com/freddybarrios/api/IAnalizador.java</file>
             <file>file:/C:/Users/freddy/Documents/NetBeansProjects/AutomatasProject/web/index.zul</file>
-        </group>
-        <group name="Health Manager Beraka">
-            <file>file:/Users/FreddyBarrios/NetBeansProjects/AutomatasProject/src/java/com/freddybarrios/validator/Validator.java</file>
         </group>
     </open-files>
 </project-private>

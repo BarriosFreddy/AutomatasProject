@@ -8,15 +8,12 @@ package com.freddybarrios.controller;
 import com.freddybarrios.validator.Analizador;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
-import java.util.Iterator;
 import java.util.Map;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.annotation.Listen;
 import org.zkoss.zk.ui.select.annotation.Wire;
-import org.zkoss.zul.Label;
 import org.zkoss.zul.Textbox;
-import org.zkoss.zul.Vbox;
 
 /**
  *
@@ -27,46 +24,46 @@ public class MainController extends SelectorComposer {
     @Wire
     private Textbox tbxEditor;
     @Wire
-    private Vbox declaradasUsadas;
+    private Textbox declaradasUsadas;
     @Wire
-    private Vbox declaradasNoUsadas;
+    private Textbox declaradasNoUsadas;
     @Wire
-    private Vbox noDeclaradasUsadas;
+    private Textbox noDeclaradasUsadas;
 
     private Analizador analizador;
 
     @Listen("onClick = #btnValidar")
     public void testing() {
-        String text = tbxEditor.getText();
-        analizador = new Analizador();
-        Map<String, ArrayList<String>> varMap = analizador.getResultado(text);
-        if (!varMap.isEmpty()) {
+        if (!tbxEditor.getText().isEmpty()) {
+            String text = tbxEditor.getText();
+            analizador = new Analizador();
+            Map<String, ArrayList<String>> varMap = analizador.getResultado(text);
+            clearBox(new Textbox[]{declaradasUsadas, declaradasNoUsadas, noDeclaradasUsadas});
 
-            print(declaradasUsadas, varMap.get("declaradasUsadas"));
-            print(declaradasNoUsadas, varMap.get("declaradasNoUsadas"));
-            print(noDeclaradasUsadas, varMap.get("noDeclaradasUsadas"));
-
+            if (!varMap.isEmpty()) {
+                print(declaradasUsadas, varMap.get("declaradasUsadas"));
+                print(declaradasNoUsadas, varMap.get("declaradasNoUsadas"));
+                print(noDeclaradasUsadas, varMap.get("noDeclaradasUsadas"));
+            }
         }
     }
 
-    private void clearVbox(Vbox box) {
-            if (box.getChildren().size() > 0) {
-                Iterator<Component> it = box.getChildren().iterator();
-                while (it.hasNext()) {
-                    box.removeChild(it.next());
-                }
-            }
+    private void clearBox(Textbox... boxes) {
+        for (Textbox box : boxes) {
+            box.setText("");
+        }
     }
 
-    public void print(Vbox vbox, ArrayList<String> varGroup) {
+    public void print(Textbox box, ArrayList<String> varGroup) {
         try {
-            clearVbox(vbox);
-
+            StringBuilder output = new StringBuilder();
             if (varGroup != null) {
                 for (String var : varGroup) {
-                    Label label = new Label(var);
-                    vbox.appendChild(label);
+                    output.append(var);
+                    output.append("\n");
                 }
+                box.setRows(varGroup.size() <= 0 ? 1 : varGroup.size());
+                box.setText(output.toString());
             }
         } catch (ConcurrentModificationException exception) {
             System.out.println("ERROR DE MODIFICACIÓN PROGRESIVA: " + exception);

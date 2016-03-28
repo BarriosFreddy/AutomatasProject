@@ -1,5 +1,18 @@
 <zk xmlns="http://www.zkoss.org/2005/zul">
     <window apply="com.freddybarrios.controller.MainController">
+        <style>
+                .btn{
+                background: #0c0;
+                font-weight: bold;
+                color: white;
+                border: none;
+                padding: 10px;
+                -webkit-border: 5px;
+                -moz-border: 5px;
+                border:5px;
+                -webkit-box-shadow: 1px 1px 5px #ccc;
+            }
+        </style>
         <div width="700px" style="margin: 50px auto 0 auto;">
             <grid>
                 <rows>
@@ -10,7 +23,7 @@
                     </row>
                     <row>
                         <cell colspan="3">
-                            <button id="btnValidar" label="VALIDAR"/>
+                            <button id="btnValidar" sclass="btn" label="V A L I D A R"/>
                         </cell>
                     </row>
                     <row>
@@ -26,13 +39,13 @@
                     </row>
                     <row>
                         <cell>
-                            <vbox id="declaradasUsadas"></vbox>
+                            <textbox id="declaradasUsadas" hflex="1" multiline="true"/>
                         </cell>
                         <cell >
-                            <vbox id="declaradasNoUsadas"></vbox>
+                            <textbox id="declaradasNoUsadas" hflex="1" multiline="true"/>
                         </cell>
                         <cell >
-                            <vbox id="noDeclaradasUsadas"></vbox>
+                            <textbox id="noDeclaradasUsadas" hflex="1" multiline="true"/>
                         </cell>
                     </row>
                 </rows>

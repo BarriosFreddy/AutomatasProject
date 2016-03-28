@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.zkoss.zul.Messagebox;
 
 /**
  *
@@ -39,6 +39,7 @@ public class Analizador implements IAnalizador {
             if (line.startsWith("declare")) {
                 Matcher matcher = pattern.matcher(line);
                 String[] dividedline = line.split("\\s");
+                try{
                 String variable = dividedline[1];
                 if (matcher.find()) {
                     if (variable.contains(",")) {
@@ -48,6 +49,9 @@ public class Analizador implements IAnalizador {
                     } else {
                         declaradas.add(variable);
                     }
+                }
+                }catch(Exception e){
+                    Messagebox.show("No puede haber espacios despues de la coma al declarar las variables", "Info", Messagebox.OK, Messagebox.EXCLAMATION);
                 }
             }
         }
@@ -71,20 +75,17 @@ public class Analizador implements IAnalizador {
             }
         }
 //
+        
+        
         for (String line : lines) {
             if (!line.isEmpty() && !line.startsWith("declare")) {
 
                 Matcher matcher = pattern.matcher(line);
-                if (matcher.find()) {
-                    for (int i = 0; i < 10; i++) {
-                        matcher.groupCount();
-                        String derNoUsu = matcher.group();
-                        
-                        
-                        if (derNoUsu != null && !declaradas.contains(derNoUsu)) {
+                while (matcher.find()) {
+                        String derNoUsu = matcher.group().trim();
+                        if (derNoUsu != null && !declaradas.contains(derNoUsu) && !noDeclaradasUsadas.contains(derNoUsu)) {
                             noDeclaradasUsadas.add(derNoUsu);
                         }
-                    }
 
                 }
             }
