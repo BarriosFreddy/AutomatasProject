@@ -20,9 +20,9 @@ import org.zkoss.zul.Messagebox;
  */
 public class Analizador implements IAnalizador {
 
-    private final String EXP_REG = "declare\\s[a-zA-Z][a-zA-Z0-9]{0,7}(\\s?,\\s?[a-zA-Z][a-zA-Z0-9]{0,7})?\\s";
+    private final String EXP_REG = "declare\\s[a-zA-Z][a-zA-Z0-9]{0,7}(\\s?,\\s?[a-zA-Z][a-zA-Z0-9]{0,7})?\\s(.+);";
     private final String EXP_REG_USO = "\\s?[a-zA-Z][a-zA-Z0-9]{0,7}\\s?";
-    private ArrayList<String> declaradas, declaradasUsadas, declaradasNoUsadas, noDeclaradasUsadas;
+    private final ArrayList<String> declaradas, declaradasUsadas, declaradasNoUsadas, noDeclaradasUsadas;
 
     public Analizador() {
         this.declaradas = new ArrayList<String>();
@@ -39,18 +39,18 @@ public class Analizador implements IAnalizador {
             if (line.startsWith("declare")) {
                 Matcher matcher = pattern.matcher(line);
                 String[] dividedline = line.split("\\s");
-                try{
-                String variable = dividedline[1];
-                if (matcher.find()) {
-                    if (variable.contains(",")) {
-                        StringTokenizer tokenizer = new StringTokenizer(variable, ",");
-                        declaradas.add(tokenizer.nextToken());
-                        declaradas.add(tokenizer.nextToken());
-                    } else {
-                        declaradas.add(variable);
+                try {
+                    String variable = dividedline[1];
+                    if (matcher.find()) {
+                        if (variable.contains(",")) {
+                            StringTokenizer tokenizer = new StringTokenizer(variable, ",");
+                            declaradas.add(tokenizer.nextToken());
+                            declaradas.add(tokenizer.nextToken());
+                        } else {
+                            declaradas.add(variable);
+                        }
                     }
-                }
-                }catch(Exception e){
+                } catch (Exception e) {
                     Messagebox.show("No puede haber espacios despues de la coma al declarar las variables", "Info", Messagebox.OK, Messagebox.EXCLAMATION);
                 }
             }
@@ -73,19 +73,37 @@ public class Analizador implements IAnalizador {
                     }
                 }
             }
+
+            if (line.contains("(") || line.contains(")")) {
+                int counterOpened = 0, counterClosed = 0;
+                String[] vector = line.split("");
+
+                for (String caracter : vector) {
+                    if (caracter.equals("(")) {
+                        counterOpened++;
+                    }
+                    if (caracter.equals(")")) {
+                        counterClosed++;
+                    }
+                }
+
+                if (counterOpened != counterClosed) {
+                    Messagebox.show("El numero de parentesis abierto no es igual al numero de cerrados", "Info", Messagebox.OK, Messagebox.EXCLAMATION);
+                }
+
+            }
         }
 //
-        
-        
+
         for (String line : lines) {
             if (!line.isEmpty() && !line.startsWith("declare")) {
 
                 Matcher matcher = pattern.matcher(line);
                 while (matcher.find()) {
-                        String derNoUsu = matcher.group().trim();
-                        if (derNoUsu != null && !declaradas.contains(derNoUsu) && !noDeclaradasUsadas.contains(derNoUsu)) {
-                            noDeclaradasUsadas.add(derNoUsu);
-                        }
+                    String derNoUsu = matcher.group().trim();
+                    if (derNoUsu != null && !declaradas.contains(derNoUsu) && !noDeclaradasUsadas.contains(derNoUsu)) {
+                        noDeclaradasUsadas.add(derNoUsu);
+                    }
 
                 }
             }

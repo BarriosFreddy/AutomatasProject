@@ -5,10 +5,6 @@
         <group name="Health Manager Beraka">
             <file>file:/Users/FreddyBarrios/NetBeansProjects/AutomatasProject/src/java/com/freddybarrios/validator/Validator.java</file>
         </group>
-        <group>
-            <file>file:/C:/Users/freddy/Documents/NetBeansProjects/AutomatasProject/src/java/com/freddybarrios/validator/Analizador.java</file>
-            <file>file:/C:/Users/freddy/Documents/NetBeansProjects/AutomatasProject/src/java/com/freddybarrios/controller/MainController.java</file>
-            <file>file:/C:/Users/freddy/Documents/NetBeansProjects/AutomatasProject/web/index.zul</file>
-        </group>
+        <group/>
     </open-files>
 </project-private>
