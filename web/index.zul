@@ -17,12 +17,12 @@
             <grid>
                 <rows>
                     <row>
-                        <cell colspan="3">
+                        <cell colspan="4">
                             <textbox id="tbxEditor" hflex="1" rows="10" multiline="true"/>
                         </cell>	
                     </row>
                     <row>
-                        <cell colspan="3">
+                        <cell colspan="4">
                             <button id="btnValidar" sclass="btn" label="V A L I D A R"/>
                         </cell>
                     </row>
@@ -36,6 +36,9 @@
                         <cell >
                             <label value="Variables no declaradas y usadas"></label>
                         </cell>
+                        <cell >
+                            <label value="Variables mal declaradas"></label>
+                        </cell>
                     </row>
                     <row>
                         <cell>
@@ -46,6 +49,9 @@
                         </cell>
                         <cell >
                             <textbox id="noDeclaradasUsadas" hflex="1" multiline="true"/>
+                        </cell>
+                        <cell >
+                            <textbox id="malDeclaradas" hflex="1" multiline="true"/>
                         </cell>
                     </row>
                 </rows>

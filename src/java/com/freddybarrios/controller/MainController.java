@@ -13,6 +13,7 @@ import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.annotation.Listen;
 import org.zkoss.zk.ui.select.annotation.Wire;
+import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Textbox;
 
 /**
@@ -29,23 +30,36 @@ public class MainController extends SelectorComposer {
     private Textbox declaradasNoUsadas;
     @Wire
     private Textbox noDeclaradasUsadas;
+    @Wire
+    private Textbox malDeclaradas;
 
-    private Analizador analizador;
+    private final Analizador analizador;
+
+    private Map<String, Object> varMap;
+
+    public MainController() {
+        analizador = new Analizador();
+    }
 
     @Listen("onClick = #btnValidar")
     public void testing() {
-        if (!tbxEditor.getText().isEmpty()) {
-            String text = tbxEditor.getText();
-            analizador = new Analizador();
-            Map<String, ArrayList<String>> varMap = analizador.getResultado(text);
-            clearBox(new Textbox[]{declaradasUsadas, declaradasNoUsadas, noDeclaradasUsadas});
 
-            if (!varMap.isEmpty()) {
-                print(declaradasUsadas, varMap.get("declaradasUsadas"));
-                print(declaradasNoUsadas, varMap.get("declaradasNoUsadas"));
-                print(noDeclaradasUsadas, varMap.get("noDeclaradasUsadas"));
-            }
+        if (!tbxEditor.getText().isEmpty()) {
+            
+            varMap = analizador.getResultado(tbxEditor.getText());
+            clearBox(new Textbox[]{declaradasUsadas, declaradasNoUsadas, noDeclaradasUsadas, malDeclaradas});
+            
+        } else {
+            Messagebox.show("Nothing to analize", "Info", Messagebox.OK, Messagebox.EXCLAMATION);
         }
+
+        if (!varMap.isEmpty() && (Boolean) varMap.get("validaParentesis")) {
+            print(declaradasUsadas, (ArrayList<String>) varMap.get("declaradasUsadas"));
+            print(declaradasNoUsadas, (ArrayList<String>) varMap.get("declaradasNoUsadas"));
+            print(noDeclaradasUsadas, (ArrayList<String>) varMap.get("noDeclaradasUsadas"));
+            print(malDeclaradas, (ArrayList<String>) varMap.get("malDeclaradas"));
+        }
+
     }
 
     private void clearBox(Textbox... boxes) {

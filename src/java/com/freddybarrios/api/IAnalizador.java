@@ -6,7 +6,6 @@
 
 package com.freddybarrios.api;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -15,7 +14,7 @@ import java.util.Map;
  */
 public interface IAnalizador {
 
-    ArrayList<String> getVariables(String texto);
+   void getVariables(String texto);
     
-    Map<String, ArrayList<String>> getResultado(String texto);
+    Map<String, Object> getResultado(String texto);
 }

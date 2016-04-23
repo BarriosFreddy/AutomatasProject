@@ -22,17 +22,20 @@ public class Analizador implements IAnalizador {
 
     private final String EXP_REG = "declare\\s[a-zA-Z][a-zA-Z0-9]{0,7}(\\s?,\\s?[a-zA-Z][a-zA-Z0-9]{0,7})?\\s(.+);";
     private final String EXP_REG_USO = "\\s?[a-zA-Z][a-zA-Z0-9]{0,7}\\s?";
-    private final ArrayList<String> declaradas, declaradasUsadas, declaradasNoUsadas, noDeclaradasUsadas;
+    private final ArrayList<String> declaradas, declaradasUsadas, declaradasNoUsadas, noDeclaradasUsadas, malDeclaradas;
+    boolean validaParentesis;
 
     public Analizador() {
         this.declaradas = new ArrayList<String>();
         this.declaradasUsadas = new ArrayList<String>();
         this.declaradasNoUsadas = new ArrayList<String>();
         this.noDeclaradasUsadas = new ArrayList<String>();
+        this.malDeclaradas = new ArrayList<String>();
+        this.validaParentesis = true;
     }
 
     @Override
-    public ArrayList<String> getVariables(String texto) {
+    public void getVariables(String texto) {
         Pattern pattern = Pattern.compile(EXP_REG);
         String[] lines = texto.split("\n");
         for (String line : lines) {
@@ -49,25 +52,25 @@ public class Analizador implements IAnalizador {
                         } else {
                             declaradas.add(variable);
                         }
+                    } else {
+                        malDeclaradas.add(variable);
                     }
                 } catch (Exception e) {
                     Messagebox.show("No puede haber espacios despues de la coma al declarar las variables", "Info", Messagebox.OK, Messagebox.EXCLAMATION);
                 }
             }
         }
-        return declaradas;
     }
 
-    public Map<String, ArrayList<String>> getResultado(String texto) {
-        Map<String, ArrayList<String>> map = new HashMap<String, ArrayList<String>>();
-        ArrayList<String> varDeclaradas = getVariables(texto);
-
+    public Map<String, Object> getResultado(String texto) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        getVariables(texto);
         Pattern pattern = Pattern.compile(EXP_REG_USO);
         String[] lines = texto.split("\n");
 
         for (String line : lines) {
             if (!line.isEmpty() && !line.startsWith("declare")) {
-                for (String var : varDeclaradas) {
+                for (String var : declaradas) {
                     if (line.contains(var) && !declaradasUsadas.contains(var)) {
                         declaradasUsadas.add(var);
                     }
@@ -88,7 +91,9 @@ public class Analizador implements IAnalizador {
                 }
 
                 if (counterOpened != counterClosed) {
+                    validaParentesis = false;
                     Messagebox.show("El numero de parentesis abierto no es igual al numero de cerrados", "Info", Messagebox.OK, Messagebox.EXCLAMATION);
+
                 }
 
             }
@@ -109,7 +114,7 @@ public class Analizador implements IAnalizador {
             }
         }
 
-        for (String varDer : varDeclaradas) {
+        for (String varDer : declaradas) {
             if (!declaradasUsadas.contains(varDer)) {
                 declaradasNoUsadas.add(varDer);
             }
@@ -118,6 +123,8 @@ public class Analizador implements IAnalizador {
         map.put("declaradasUsadas", declaradasUsadas);
         map.put("declaradasNoUsadas", declaradasNoUsadas);
         map.put("noDeclaradasUsadas", noDeclaradasUsadas);
+        map.put("malDeclaradas", malDeclaradas);
+        map.put("validaParentesis", validaParentesis);
 
         return map;
     }
