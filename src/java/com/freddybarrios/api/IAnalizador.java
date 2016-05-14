@@ -14,7 +14,7 @@ import java.util.Map;
  */
 public interface IAnalizador {
 
-   void getVariables(String texto);
+    void getVariables(String texto);
     
     Map<String, Object> getResultado(String texto);
 }

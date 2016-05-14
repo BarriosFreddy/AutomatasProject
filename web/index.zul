@@ -12,51 +12,73 @@
                 border:5px;
                 -webkit-box-shadow: 1px 1px 5px #ccc;
             }
+            .center{
+                text-align: center;
+                font-weight: bold;
+            }
         </style>
-        <div width="700px" style="margin: 50px auto 0 auto;">
+        <div width="800px" style="margin: 50px auto 0 auto;">
             <grid>
                 <rows>
                     <row>
-                        <cell colspan="4">
-                            <textbox id="tbxEditor" hflex="1" rows="10" multiline="true"/>
-                        </cell>	
-                    </row>
-                    <row>
-                        <cell colspan="4">
-                            <button id="btnValidar" sclass="btn" label="V A L I D A R"/>
+                        <cell width="550px">
+                            <hbox width="100%"> 
+                                <textbox id="tbxEditor" hflex="1" vflex="1" rows="10" multiline="true"/>
+                            </hbox>
+                            <space/>
+                            <hbox width="100%"> 
+                                <button id="btnValidar" sclass="btn" label="V A L I D A R"/>
+                            </hbox>
+                            <space/>
+                            <hbox width="100%"> 
+                                <grid>
+                                    <rows>
+                                        <row>
+                                            <cell colspan="4">
+                                                <label value="V A R I A B L E S" sclass="center"  width="100%"></label>
+                                            </cell>
+                                        </row>
+                                        <row>
+                                            <cell>
+                                                <label  value="Declaradas y usadas"  width="100%"></label>
+                                            </cell>
+                                            <cell>
+                                                <label value="Declaradas y no usadas" width="25%"></label>
+                                            </cell>
+                                            <cell>
+                                                <label value="No declaradas y usadas" width="25%"></label>
+                                            </cell>
+                                            <cell>
+                                                <label value="Mal declaradas" width="25%"></label>
+                                            </cell>
+                                        </row>
+                                        <row>
+                                            <cell>
+                                                <textbox id="declaradasUsadas" hflex="1" multiline="true"/>
+                                            </cell>
+                                            <cell>
+                                                <textbox id="declaradasNoUsadas" hflex="1" multiline="true"/>
+                                            </cell>
+                                            <cell>
+                                                <textbox id="noDeclaradasUsadas" hflex="1" multiline="true"/>
+                                            </cell>
+                                            <cell>
+                                                <textbox id="malDeclaradas" hflex="1" multiline="true"/>
+                                            </cell>
+                                        </row>
+                                    </rows>
+                                </grid>
+                            </hbox>
                         </cell>
-                    </row>
-                    <row>
                         <cell>
-                            <label value="Variables declaradas y usadas"></label>
-                        </cell>
-                        <cell >
-                            <label value="Variables declaradas y no usadas"></label>
-                        </cell>
-                        <cell >
-                            <label value="Variables no declaradas y usadas"></label>
-                        </cell>
-                        <cell >
-                            <label value="Variables mal declaradas"></label>
-                        </cell>
-                    </row>
-                    <row>
-                        <cell>
-                            <textbox id="declaradasUsadas" hflex="1" multiline="true"/>
-                        </cell>
-                        <cell >
-                            <textbox id="declaradasNoUsadas" hflex="1" multiline="true"/>
-                        </cell>
-                        <cell >
-                            <textbox id="noDeclaradasUsadas" hflex="1" multiline="true"/>
-                        </cell>
-                        <cell >
-                            <textbox id="malDeclaradas" hflex="1" multiline="true"/>
+                            <vbox id="logger">
+                                <label value="#Log del sistema"></label>
+                            </vbox>
+<!--<textbox id="logger" hflex="1" vflex="1" multiline="true" value="#Log del sistema" />-->
                         </cell>
                     </row>
                 </rows>
             </grid>
-
         </div>
     </window>
 </zk>

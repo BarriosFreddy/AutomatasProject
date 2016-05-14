@@ -23,7 +23,8 @@ public class Analizador implements IAnalizador {
     private final String EXP_REG = "declare\\s[a-zA-Z][a-zA-Z0-9]{0,7}(\\s?,\\s?[a-zA-Z][a-zA-Z0-9]{0,7})?\\s(.+);";
     private final String EXP_REG_USO = "\\s?[a-zA-Z][a-zA-Z0-9]{0,7}\\s?";
     private final ArrayList<String> declaradas, declaradasUsadas, declaradasNoUsadas, noDeclaradasUsadas, malDeclaradas;
-    boolean validaParentesis;
+    boolean validaParentesis, validaPuntoComa;
+    StringBuilder output = new StringBuilder();
 
     public Analizador() {
         this.declaradas = new ArrayList<String>();
@@ -32,6 +33,7 @@ public class Analizador implements IAnalizador {
         this.noDeclaradasUsadas = new ArrayList<String>();
         this.malDeclaradas = new ArrayList<String>();
         this.validaParentesis = true;
+        this.validaPuntoComa = true;
     }
 
     @Override
@@ -56,7 +58,7 @@ public class Analizador implements IAnalizador {
                         malDeclaradas.add(variable);
                     }
                 } catch (Exception e) {
-                    Messagebox.show("No puede haber espacios despues de la coma al declarar las variables", "Info", Messagebox.OK, Messagebox.EXCLAMATION);
+                    output.append("No puede haber espacios despues de la coma al declarar las variables|");
                 }
             }
         }
@@ -68,40 +70,46 @@ public class Analizador implements IAnalizador {
         Pattern pattern = Pattern.compile(EXP_REG_USO);
         String[] lines = texto.split("\n");
 
+        int counter = 1;
         for (String line : lines) {
-            if (!line.isEmpty() && !line.startsWith("declare")) {
-                for (String var : declaradas) {
-                    if (line.contains(var) && !declaradasUsadas.contains(var)) {
-                        declaradasUsadas.add(var);
-                    }
-                }
-            }
+            if (!line.isEmpty() && !line.endsWith(";")) {
+                output.append(String.format("Falta el simbolo ; en la linea numero %d |", counter));
+                validaPuntoComa = false;
+            } else {
 
-            if (line.contains("(") || line.contains(")")) {
-                int counterOpened = 0, counterClosed = 0;
-                String[] vector = line.split("");
-
-                for (String caracter : vector) {
-                    if (caracter.equals("(")) {
-                        counterOpened++;
-                    }
-                    if (caracter.equals(")")) {
-                        counterClosed++;
+                if (!line.isEmpty() && !line.startsWith("declare")) {
+                    for (String var : declaradas) {
+                        if (line.contains(var) && !declaradasUsadas.contains(var)) {
+                            declaradasUsadas.add(var);
+                        }
                     }
                 }
 
-                if (counterOpened != counterClosed) {
-                    validaParentesis = false;
-                    Messagebox.show("El numero de parentesis abierto no es igual al numero de cerrados", "Info", Messagebox.OK, Messagebox.EXCLAMATION);
+                if (line.contains("(") || line.contains(")")) {
+                    int counterOpened = 0, counterClosed = 0;
+                    String[] vector = line.split("");
 
+                    for (String caracter : vector) {
+                        if (caracter.equals("(")) {
+                            counterOpened++;
+                        }
+                        if (caracter.equals(")")) {
+                            counterClosed++;
+                        }
+                    }
+
+                    if (counterOpened != counterClosed) {
+                        validaParentesis = false;
+                        output.append(String.format("El numero de parentesis abierto no es igual al numero de cerrados, en la línea %d |", counter));
+                    }
                 }
-
+                counter++;
             }
         }
-//
+
 
         for (String line : lines) {
-            if (!line.isEmpty() && !line.startsWith("declare")) {
+            if (!line.isEmpty() && !line.startsWith("declare") && line.endsWith(";")) {
 
                 Matcher matcher = pattern.matcher(line);
                 while (matcher.find()) {
@@ -125,7 +133,9 @@ public class Analizador implements IAnalizador {
         map.put("noDeclaradasUsadas", noDeclaradasUsadas);
         map.put("malDeclaradas", malDeclaradas);
         map.put("validaParentesis", validaParentesis);
-
+        map.put("validaPuntoComa", validaPuntoComa);
+        map.put("output", output.toString());
         return map;
+
     }
 }
