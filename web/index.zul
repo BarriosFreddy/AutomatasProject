@@ -17,7 +17,7 @@
                 font-weight: bold;
             }
         </style>
-        <div width="800px" style="margin: 50px auto 0 auto;">
+        <div width="900px" style="margin: 50px auto 0 auto;">
             <grid>
                 <rows>
                     <row>
@@ -70,11 +70,11 @@
                                 </grid>
                             </hbox>
                         </cell>
-                        <cell>
-                            <vbox id="logger">
-                                <label value="#Log del sistema"></label>
-                            </vbox>
-<!--<textbox id="logger" hflex="1" vflex="1" multiline="true" value="#Log del sistema" />-->
+                        <cell >
+                            <label value="#Log del sistema" />
+                            <div height="360px" style="overflow:auto;">
+                                <vbox id="logger"></vbox>
+                            </div>
                         </cell>
                     </row>
                 </rows>
