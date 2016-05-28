@@ -8,7 +8,6 @@ package com.freddybarrios.controller;
 import com.freddybarrios.validator.Analizador;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
 import org.zkoss.zk.ui.Component;
@@ -42,6 +41,9 @@ public class MainController extends SelectorComposer {
 
     private Map<String, Object> varMap;
     private final StringBuilder output = new StringBuilder();
+    Calendar calendar = Calendar.getInstance();
+    private final String GET_TIME = calendar.get(Calendar.HOUR) + ":" + calendar.get(Calendar.MINUTE) + ":" + calendar.get(Calendar.SECOND) + "- "
+            + calendar.get(Calendar.DATE) + "/" + calendar.get(Calendar.MONTH) + "/" + calendar.get(Calendar.YEAR) + " ";
 
     public MainController() {
     }
@@ -49,7 +51,7 @@ public class MainController extends SelectorComposer {
     @Listen("onClick = #btnValidar")
     public void testing() {
         clearBox(new Textbox[]{declaradasUsadas, declaradasNoUsadas, noDeclaradasUsadas, malDeclaradas});
-              
+
         logger.getChildren().clear();
 
         if (!tbxEditor.getText().isEmpty()) {
@@ -77,13 +79,13 @@ public class MainController extends SelectorComposer {
         for (Textbox box : boxes) {
             box.setValue("");
         }
-        
+
     }
 
     public void showLog(String opt) {
         StringTokenizer outputs = new StringTokenizer(opt, "|");
         while (outputs.hasMoreTokens()) {
-            logger.appendChild(new Label("-"  + outputs.nextToken()));
+            logger.appendChild(new Label("-" + outputs.nextToken()));
         }
     }
 
@@ -92,10 +94,10 @@ public class MainController extends SelectorComposer {
         if (varGroup != null) {
             for (String var : varGroup) {
                 if (var.contains("_")) {
-                  String[] vec = var.split("_");
-                  outputPrint.append(vec[0]);   
-                }else{
-                outputPrint.append(var);
+                    String[] vec = var.split("_");
+                    outputPrint.append(vec[0]);
+                } else {
+                    outputPrint.append(var);
                 }
                 outputPrint.append("\n");
             }

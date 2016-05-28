@@ -31,10 +31,13 @@ public class Analizador implements IAnalizador {
     boolean validaParentesis, validaPuntoComa;
     StringBuilder output = new StringBuilder();
     Calendar calendar = Calendar.getInstance();
-    private final String GET_TIME = calendar.get(Calendar.DATE)+"/"+calendar.get(Calendar.MONTH)+"/"+calendar.get(Calendar.YEAR)+" "+
-            calendar.get(Calendar.HOUR)+":"+calendar.get(Calendar.MINUTE)+":"+calendar.get(Calendar.SECOND)+ "- ";
+    Stack<String> pilaIf = new Stack();
+    Stack<String> pilaFor = new Stack();
+    private final String GET_TIME = calendar.get(Calendar.HOUR) + ":" + calendar.get(Calendar.MINUTE) + ":" + calendar.get(Calendar.SECOND) + "- "
+            + calendar.get(Calendar.DATE) + "/" + calendar.get(Calendar.MONTH) + "/" + calendar.get(Calendar.YEAR) + " ";
 
-    
+    private int countSINO = 0;
+
     public Analizador() {
         declaradas = new ArrayList<String>();
         declaradasUsadas = new ArrayList<String>();
@@ -49,8 +52,8 @@ public class Analizador implements IAnalizador {
     public void getVariables(String texto) {
         Pattern pattern = Pattern.compile(EXP_REG);
         String[] lines = texto.split("\n");
-        
-         int count = 1;
+
+        int count = 1;
         for (String line : lines) {
             if (line.startsWith("declare")) {
                 Matcher matcher = pattern.matcher(line);
@@ -62,8 +65,11 @@ public class Analizador implements IAnalizador {
                             StringTokenizer tokenizer = new StringTokenizer(variable, ",");
                             declaradas.add(tokenizer.nextToken());
                             declaradas.add(tokenizer.nextToken());
-                        } else {
+                        } else if (!isReserved(variable)) {
                             declaradas.add(variable);
+                        } else if (isReserved(variable)) {
+                            output.append(GET_TIME);
+                            output.append(String.format("Esta variable '%s' es una palabra reservada|", variable));
                         }
                     } else {
                         malDeclaradas.add(variable);
@@ -89,10 +95,22 @@ public class Analizador implements IAnalizador {
         int counter = 1;
         for (String line : lines) {
             if (!line.isEmpty() && !line.endsWith(";")) {
-                output.append(GET_TIME);
-                output.append(String.format("Falta el simbolo ; en la linea numero %d |", counter));
-                validaPuntoComa = false;
+                if ((line.startsWith("si ") && line.endsWith("entonces")) || line.startsWith("para")
+                        || line.startsWith("sino")) {
+                    emparejarIF(line, counter);
+                    emparejarFOR(line, counter);
+                } else {
+                    output.append(GET_TIME);
+                    output.append(String.format("Falta el simbolo ; en la linea numero %d |", counter));
+                    validaPuntoComa = false;
+                }
+
             } else {
+
+                if (line.startsWith("finsi") || line.startsWith("finpara")) {
+                    emparejarIF(line, counter);
+                    emparejarFOR(line, counter);
+                }
 
                 if (!line.isEmpty() && !line.startsWith("declare")) {
                     for (String var : declaradas) {
@@ -100,17 +118,33 @@ public class Analizador implements IAnalizador {
                             declaradasUsadas.add(var);
                         }
                     }
-  
+
                     if (validaParentesis(line)) {
                         validaParentesis = false;
                         output.append(GET_TIME);
                         output.append(String.format("La sintaxis de los parentesis no es correcta, en la línea %d |", counter));
                     }
+
                 }
                 counter++;
             }
         }
 
+        if (!pilaIf.isEmpty()) {
+            output.append(GET_TIME);
+            String[] aux = pilaIf.peek().split("#");
+            output.append(String.format("La sintaxis de las 'si' no es correcta, en la linea %s|", aux[1]));
+        }
+
+        if (!pilaFor.isEmpty()) {
+            output.append(GET_TIME);
+            String[] aux = pilaFor.peek().split("#");
+            output.append(String.format("La sintaxis de los 'para' no es correcta, en la linea %s|", aux[1]));
+        }
+        if (countSINO > 1) {
+            output.append(GET_TIME);
+            output.append("No puede haber mas de un 'sino'|");
+        }
 
         for (String line : lines) {
             if (!line.isEmpty() && !line.startsWith("declare") && line.endsWith(";")) {
@@ -118,7 +152,8 @@ public class Analizador implements IAnalizador {
                 Matcher matcher = pattern.matcher(line);
                 while (matcher.find()) {
                     String derNoUsu = matcher.group().trim();
-                    if (derNoUsu != null && !declaradas.contains(derNoUsu) && !noDeclaradasUsadas.contains(derNoUsu)) {
+                    if (derNoUsu != null && !declaradas.contains(derNoUsu) 
+                            && !noDeclaradasUsadas.contains(derNoUsu) && !isReserved(derNoUsu)) {
                         noDeclaradasUsadas.add(derNoUsu);
                     }
 
@@ -139,29 +174,66 @@ public class Analizador implements IAnalizador {
         map.put("validaParentesis", validaParentesis);
         map.put("validaPuntoComa", validaPuntoComa);
         map.put("output", output.toString());
-        
-        
+
         return map;
 
     }
-    
-    public boolean validaParentesis(String line){
+
+    public boolean validaParentesis(String line) {
         Stack<String> pila = new Stack();
         int lineLength = line.length();
-        
+
         for (int i = 0; i < lineLength; i++) {
             if (line.charAt(i) == '(') {
                 pila.push("(");
-            }else if (line.charAt(i) == ')') {
+            } else if (line.charAt(i) == ')') {
                 if (!pila.isEmpty()) {
                     pila.pop();
-                }else{
+                } else {
                     pila.push(")");
                     break;
                 }
             }
         }
-        
+
         return !pila.isEmpty();
     }
+
+    public void emparejarIF(String line, int counter) {
+
+        if (line.startsWith("si ") && line.endsWith("entonces")) {
+            pilaIf.push("si" + "#" + counter);
+        } else if (line.startsWith("sino")) {
+            countSINO++;
+        } else if (line.equals("finsi;")) {
+            if (!pilaIf.isEmpty()) {
+                pilaIf.pop();
+            } else {
+                pilaIf.push("finsi;" + "#" + ++counter);
+            }
+        }
+    }
+
+    public void emparejarFOR(String line, int counter) {
+        if (line.startsWith("para")) {
+            pilaFor.push("para" + "#" + counter);
+        } else if (line.equals("finpara")) {
+            if (!pilaFor.isEmpty()) {
+                pilaFor.pop();
+            } else {
+                pilaFor.push("finpara" + "#" + counter);
+            }
+        }
+    }
+
+    public boolean isReserved(String word) {
+        boolean toggle = false;
+        for (String w : RESERVED_WORDS) {
+            if (w.equalsIgnoreCase(word)) {
+                toggle = true;
+            }
+        }
+        return toggle;
+    }
+
 }
