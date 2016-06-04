@@ -248,7 +248,6 @@ public class Analizador implements IAnalizador {
         if (line.startsWith("para") && line.contains("hasta") && line.endsWith("haga")) {
 
             int index = line.lastIndexOf("haga");
-//            String condition = ;
             
             String[] vars = (line.substring(5, --index)).split("\\s");
             
@@ -259,17 +258,9 @@ public class Analizador implements IAnalizador {
                         String var = matcher.group().trim();
                         if (var != null && !isReserved(var) && !declaradas.contains(var)
                                 && !noDeclaradasUsadas.contains(var)) {
-//                            output.append(GET_TIME);
-//                            output.append(String.format("la variable '%s' no esta declarada|", var));
                             noDeclaradasUsadas.add(var);
                         }
                     } 
-//                    else {
-//                        malDeclaradas.add(variable);
-//                        output.append(GET_TIME);
-//                        String aux = String.format("Variable mal declarada, en la linea %d |", counter);
-//                        output.append(aux);
-//                    }
                 }
            
 
