@@ -33,8 +33,8 @@ public class Analizador implements IAnalizador {
     Calendar calendar = Calendar.getInstance();
     Stack<String> pilaIf = new Stack();
     Stack<String> pilaFor = new Stack();
-    private final String GET_TIME = calendar.get(Calendar.HOUR) + ":" + calendar.get(Calendar.MINUTE) + ":" + calendar.get(Calendar.SECOND) + "- "
-            + calendar.get(Calendar.DATE) + "/" + calendar.get(Calendar.MONTH) + "/" + calendar.get(Calendar.YEAR) + " ";
+    private final String GET_TIME = "[" + calendar.get(Calendar.HOUR) + ":" + calendar.get(Calendar.MINUTE) + ":" + calendar.get(Calendar.SECOND) + " "
+            + calendar.get(Calendar.DATE) + "/" + calendar.get(Calendar.MONTH) + "/" + calendar.get(Calendar.YEAR) + "] ";
 
     private int countSINO = 0;
 
@@ -152,7 +152,7 @@ public class Analizador implements IAnalizador {
                 Matcher matcher = pattern.matcher(line);
                 while (matcher.find()) {
                     String derNoUsu = matcher.group().trim();
-                    if (derNoUsu != null && !declaradas.contains(derNoUsu) 
+                    if (derNoUsu != null && !declaradas.contains(derNoUsu)
                             && !noDeclaradasUsadas.contains(derNoUsu) && !isReserved(derNoUsu)) {
                         noDeclaradasUsadas.add(derNoUsu);
                     }
@@ -201,7 +201,35 @@ public class Analizador implements IAnalizador {
 
     public void emparejarIF(String line, int counter) {
 
+        Pattern pattern = Pattern.compile(EXP_REG_USO);
+
         if (line.startsWith("si ") && line.endsWith("entonces")) {
+            int index = line.lastIndexOf("entonces");
+            String condition = line.substring(3, --index);
+
+            String[] vars = condition.split("(>|=|<)");
+            if (vars.length == 2) {
+
+                for (String variable : vars) {
+                    Matcher matcher = pattern.matcher(variable);
+                    if (matcher.find()) {
+                        String var = matcher.group().trim();
+                        if (var != null && !isReserved(var) && !declaradas.contains(var)
+                                && !noDeclaradasUsadas.contains(var)) {
+                            noDeclaradasUsadas.add(var);
+                        }
+                    } else {
+                        malDeclaradas.add(variable);
+                        output.append(GET_TIME);
+                        String aux = String.format("Variable mal declarada, en la linea %d |", counter);
+                        output.append(aux);
+                    }
+                }
+            } else {
+                output.append(GET_TIME);
+                output.append(String.format("La condición del si esta mal planteada, en la linea %d |", counter));
+            }
+
             pilaIf.push("si" + "#" + counter);
         } else if (line.startsWith("sino")) {
             countSINO++;
@@ -215,9 +243,38 @@ public class Analizador implements IAnalizador {
     }
 
     public void emparejarFOR(String line, int counter) {
-        if (line.startsWith("para")) {
+        Pattern pattern = Pattern.compile(EXP_REG_USO);
+
+        if (line.startsWith("para") && line.contains("hasta") && line.endsWith("haga")) {
+
+            int index = line.lastIndexOf("haga");
+//            String condition = ;
+            
+            String[] vars = (line.substring(5, --index)).split("\\s");
+            
+                for (String variable : vars) {
+                    
+                    Matcher matcher = pattern.matcher(variable);
+                    if (matcher.find()) {
+                        String var = matcher.group().trim();
+                        if (var != null && !isReserved(var) && !declaradas.contains(var)
+                                && !noDeclaradasUsadas.contains(var)) {
+//                            output.append(GET_TIME);
+//                            output.append(String.format("la variable '%s' no esta declarada|", var));
+                            noDeclaradasUsadas.add(var);
+                        }
+                    } 
+//                    else {
+//                        malDeclaradas.add(variable);
+//                        output.append(GET_TIME);
+//                        String aux = String.format("Variable mal declarada, en la linea %d |", counter);
+//                        output.append(aux);
+//                    }
+                }
+           
+
             pilaFor.push("para" + "#" + counter);
-        } else if (line.equals("finpara")) {
+        } else if (line.equals("finpara;")) {
             if (!pilaFor.isEmpty()) {
                 pilaFor.pop();
             } else {

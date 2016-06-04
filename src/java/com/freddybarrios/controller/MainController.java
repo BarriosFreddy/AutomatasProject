@@ -42,8 +42,8 @@ public class MainController extends SelectorComposer {
     private Map<String, Object> varMap;
     private final StringBuilder output = new StringBuilder();
     Calendar calendar = Calendar.getInstance();
-    private final String GET_TIME = calendar.get(Calendar.HOUR) + ":" + calendar.get(Calendar.MINUTE) + ":" + calendar.get(Calendar.SECOND) + "- "
-            + calendar.get(Calendar.DATE) + "/" + calendar.get(Calendar.MONTH) + "/" + calendar.get(Calendar.YEAR) + " ";
+    private final String GET_TIME = "[" + calendar.get(Calendar.HOUR) + ":" + calendar.get(Calendar.MINUTE) + ":" + calendar.get(Calendar.SECOND) + " "
+            + calendar.get(Calendar.DATE) + "/" + calendar.get(Calendar.MONTH) + "/" + calendar.get(Calendar.YEAR) + "] ";
 
     public MainController() {
     }
@@ -66,12 +66,10 @@ public class MainController extends SelectorComposer {
                 print(noDeclaradasUsadas, (ArrayList<String>) varMap.get("noDeclaradasUsadas"));
                 print(malDeclaradas, (ArrayList<String>) varMap.get("malDeclaradas"));
             }
-//            output.delete(0, output.toString().length());
         } else {
-            output.append(Calendar.getInstance().getTime());
-            output.append("- Nothing to analize|");
+            output.append(GET_TIME);
+            output.append(" Nothing to analize|");
             showLog(output.toString());
-//            output.delete(0, output.toString().length());
         }
     }
 
@@ -85,7 +83,7 @@ public class MainController extends SelectorComposer {
     public void showLog(String opt) {
         StringTokenizer outputs = new StringTokenizer(opt, "|");
         while (outputs.hasMoreTokens()) {
-            logger.appendChild(new Label("-" + outputs.nextToken()));
+            logger.appendChild(new Label(outputs.nextToken()));
         }
     }
 
